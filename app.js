@@ -10,7 +10,8 @@ var uiController = (function(){
         budgetlevel : ".budget__value",
         incomeLabel : ".budget__income--value",
         expenseLabel : ".budget__expenses--value",
-        percentageLabel : ".budget__expenses--percentage"
+        percentageLabel : ".budget__expenses--percentage",
+        containerDiv : ".container"
 }
     // Орлого зарлага , Ямар зориулалттай , Хэдэн төгрөг орж ирсэнийг DOM оос олж return ашиглаж App controller луу явуулж байна 
     return {
@@ -58,20 +59,25 @@ var uiController = (function(){
 
     },
 
+    // Дэлгэцнээс элемент устгах 
+    deleteListItem : function(id){
+        var el = document.getElementById(id);
+        el.parentNode.removeChild(el);
+    },
         // Орлого зарлагийн html ийг дэлгэцэнд харуулах publicservice
     addListItem : function(item , type){
         // 1Рт : Орлого зарлагын element ийг агуулсан Html ийг бэлтгэнэ
         var html , list;
         if(type==='inc'){
             list = DOMstrings.incomeList;
-            html='<div class="item clearfix" id="income-%id%"><div class="item__description">%DESCRIPTION%</div><div class="right clearfix"><div class="item__value">%VALUE%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            html='<div class="item clearfix" id="inc-%id%"><div class="item__description">%DESCRIPTION%</div><div class="right clearfix"><div class="item__value">%VALUE%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
         }
         else {
             list = DOMstrings.expList;
-           html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%DESCRIPTION%</div><div class="right clearfix"><div class="item__value">%VALUE%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+           html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%DESCRIPTION%</div><div class="right clearfix"><div class="item__value">%VALUE%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
         }
         // 2рт : Тэр html дотроо орлого зарлагын утгуудыг Replace ашиглан өөрчилнө
-           html =  html.replace('%id' , item.id);
+           html =  html.replace('%id%' , item.id);
            html = html.replace('%DESCRIPTION%' , item.description);
            html = html.replace('%VALUE%' , item.value);
         // 3рт ;: Бэлтэгсэн HTMl ээ Dom руу хийж өгнө
@@ -148,6 +154,18 @@ var financeController = (function(){
         }
     },
 
+    deleteItem : function(type , id){
+        var ids = data.items[type].map(function(el){
+            return el.id;
+        });
+
+        var index  = ids.indexOf(id);
+
+        if(index !== -1){
+            data.items[type].splice(index , 1);
+        }
+    },
+
     addItem: function(type, desc, val) {
       var item, id;
 
@@ -214,6 +232,24 @@ var appController = (function(uiCtrl , fnCtrl){
     document.addEventListener('keypress' , function(event){
         if(event.keyCode === 13 || event.which === 13){
             ctrlAddItem();
+        }
+    });
+
+    // X дэмдэг дархад ажиллах event listener ийг eventBubbling ашиглан хииж байна
+    document.querySelector(DOM.containerDiv).addEventListener('click',function(event){
+        var id = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(id){
+            var arr = id.split('-');
+            var type = arr[0];
+            var itemId  = parseInt(arr[1]);
+
+            // 1рт : Санхүүгийн module аас type , id ашиглаад устгана . 
+            fnCtrl.deleteItem(type , itemId);
+            // 2рт : Дэлгэц дээрээс энэ элементийг устгана
+            uiCtrl.deleteListItem(id);
+            // 3рт : Үлдэгдэл тооцоог шинэчилж харуулна
+
         }
     });
  };
