@@ -6,7 +6,11 @@ var uiController = (function(){
         inputValue: ".add__value",
         addBtn: ".add__btn",
         incomeList : ".income__list",
-        expList : ".expenses__list"
+        expList : ".expenses__list",
+        budgetlevel : ".budget__value",
+        incomeLabel : ".budget__income--value",
+        expenseLabel : ".budget__expenses--value",
+        percentageLabel : ".budget__expenses--percentage"
 }
     // Орлого зарлага , Ямар зориулалттай , Хэдэн төгрөг орж ирсэнийг DOM оос олж return ашиглаж App controller луу явуулж байна 
     return {
@@ -38,6 +42,20 @@ var uiController = (function(){
 
         // Cursor шууд description хэсэг рүү шилжих
         fieldsArr[0].focus();
+    },
+
+    // Төсвийг дэлгэцэнд үзүүлэх 
+    budgetWatch : function(budget){
+        document.querySelector(DOMstrings.budgetlevel).textContent = budget.budget;
+        document.querySelector(DOMstrings.incomeLabel).textContent = budget.totalInc;
+        document.querySelector(DOMstrings.expenseLabel).textContent = budget.totalexp;
+
+        if(budget.percent!==0){
+            document.querySelector(DOMstrings.percentageLabel).textContent = budget.percent + '%';
+        }else{
+            document.querySelector(DOMstrings.percentageLabel).textContent = budget.percent;
+        }
+
     },
 
         // Орлого зарлагийн html ийг дэлгэцэнд харуулах publicservice
@@ -73,7 +91,6 @@ var financeController = (function(){
   };
 
   var calculateTotal = function(type){
-
     var sum = 0;
     data.items[type].forEach(function(el){
         sum = sum + el.value;
@@ -178,7 +195,7 @@ var appController = (function(uiCtrl , fnCtrl){
 
                     // 6 : Төсвийн тооцоог дэлгэцэнд гаргана
 
-                    console.log(budget);
+                    uiCtrl.budgetWatch(budget);
 
                 }
 };
@@ -204,6 +221,12 @@ var appController = (function(uiCtrl , fnCtrl){
 return {
     init : function(){
         console.log('Applicition starter>>!');
+        uiCtrl.budgetWatch({
+            budget : 0,
+            percent : 0,
+            totalInc : 0,
+            totalexp : 0
+        });
         setupEventListener();
     }
 }
