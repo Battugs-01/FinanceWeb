@@ -17,7 +17,27 @@ var uiController = (function(){
     },
     getDOMstrings : function(){
         return DOMstrings;
+        },
+
+    addListItem : function(item , type){
+        // 1Рт : Орлого зарлагын element ийг агуулсан Html ийг бэлтгэнэ
+        var html , list;
+        if(type==='inc'){
+            list = ".income__list"
+            html='<div class="item clearfix" id="income-%id%"><div class="item__description">%DESCRIPTION%</div><div class="right clearfix"><div class="item__value">%VALUE%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
         }
+        else {
+            list = ".expenses__list"
+           html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%DESCRIPTION%</div><div class="right clearfix"><div class="item__value">%VALUE%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+        }
+        // 2рт : Тэр html дотроо орлого зарлагын утгуудыг Replace ашиглан өөрчилнө
+           html =  html.replace('%id' , item.id);
+           html = html.replace('%DESCRIPTION%' , item.description);
+           html = html.replace('%VALUE%' , item.value);
+        // 3рт ;: Бэлтэгсэн HTMl ээ Dom руу хийж өгнө
+
+        document.querySelector(list).insertAdjacentHTML('beforeend',html);
+    } 
 };
 })();
 
@@ -65,6 +85,8 @@ var financeController = (function(){
       }
 
       data.items[type].push(item);
+
+      return item;
     },
 
     seeData: function() {
@@ -82,10 +104,10 @@ var appController = (function(uiCtrl , fnCtrl){
                 var input = uiCtrl.getInput();
                 console.log(input);
                 // 2рт : Олж авсан өгөгдлүүдээ санхүүгийн controllert дамжуулж тэнд хаднална
-                fnCtrl.addItem(input.type , input.description , input.value);
+               var item =  fnCtrl.addItem(input.type , input.description , input.value);
             
                 // 3рт : Олж авсан өгөгдлүүдээ веб дээрээ тохирох хэсэгт нь гаргана
-        
+                uiCtrl.addListItem(item , input.type);
                 // 4рт : Төсвийг тооцоолно 
         
                 // 5рт : Эцсийн үлдэгдэл тооцоог дэлгэцэнд гаргана
