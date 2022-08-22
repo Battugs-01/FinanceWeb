@@ -61,6 +61,16 @@ var nodeListForEach = function(list , callback){
             document.querySelector(DOMstrings.dateLabel).textContent = today.getMonth()+"сар"
         }, 
 
+        changeType : function(){
+            var fields = document.querySelectorAll(DOMstrings.inputType + ", " +DOMstrings.inputDescription , ","  + DOMstrings.inputValue);
+
+            nodeListForEach(fields , function(el){
+                el.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMstrings.addBtn).classList.toggle('red');
+        },
+
         getInput : function(){
             return {
                 type : document.querySelector(DOMstrings.inputType).value,
@@ -344,6 +354,8 @@ var updateBudget = function()
             ctrlAddItem();
         }
     });
+
+    document.querySelector(DOMstrings.inputType).addEventListener('change',uiController.changeType);
 
     // X дэмдэг дархад ажиллах event listener ийг eventBubbling ашиглан хииж байна
     document.querySelector(DOM.containerDiv).addEventListener('click',function(event){
