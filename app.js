@@ -16,8 +16,37 @@ var uiController = (function(){
         dateLabel : ".budget__title--month"
 };
 
-var formatMoney = function(too){
-    
+var formatMoney = function(too , type){
+            
+        too = '' + too;
+
+        var x = too.split("").reverse().join("");
+       
+
+        var y = "";
+        var count = 1;
+
+        for(var i = 0 ; i < x.length ; i++){
+        y = y +x[i];
+
+        if(count%3 === 0 ) {
+
+            y = y + ",";
+        }
+        count++;
+        }
+
+        var z = y.split("").reverse().join("");
+        
+
+        if(z[0] === ","){
+        z = z.substring(1 , z.length);
+        }
+
+       if(type === 'inc') z = "+" + z;
+       else z = "-" + z;
+       return z ;
+
 }
 
 var nodeListForEach = function(list , callback){
@@ -74,9 +103,12 @@ var nodeListForEach = function(list , callback){
 
     // Төсвийг дэлгэцэнд үзүүлэх 
     budgetWatch : function(budget){
-        document.querySelector(DOMstrings.budgetlevel).textContent = budget.budget;
-        document.querySelector(DOMstrings.incomeLabel).textContent = budget.totalInc;
-        document.querySelector(DOMstrings.expenseLabel).textContent = budget.totalexp;
+        var type;
+        if(budget.budget > 0) type = 'inc';
+        else type = 'exp';
+        document.querySelector(DOMstrings.budgetlevel).textContent = formatMoney(budget.budget);
+        document.querySelector(DOMstrings.incomeLabel).textContent =formatMoney( budget.totalInc  , 'inc');
+        document.querySelector(DOMstrings.expenseLabel).textContent =formatMoney( budget.totalexp , 'exp');
 
         if(budget.percent!==0){
             document.querySelector(DOMstrings.percentageLabel).textContent = budget.percent + '%';
@@ -106,7 +138,7 @@ var nodeListForEach = function(list , callback){
         // 2рт : Тэр html дотроо орлого зарлагын утгуудыг Replace ашиглан өөрчилнө
            html =  html.replace('%id%' , item.id);
            html = html.replace('%DESCRIPTION%' , item.description);
-           html = html.replace('%VALUE%' , item.value);
+           html = html.replace('%VALUE%' , formatMoney(item.value  , type) );
         // 3рт ;: Бэлтэгсэн HTMl ээ Dom руу хийж өгнө
 
         document.querySelector(list).insertAdjacentHTML('beforeend',html);
